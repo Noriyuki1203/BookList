@@ -1,0 +1,27 @@
+﻿@page "/postdata"
+@inject HttpClient HttpClient
+
+<h3>PostData</h3>
+
+<div>
+    <input type="text" @bind="postData" placeholder="Enter data" />
+    <button @onclick="dataPost">Submit</button>
+
+</div>
+
+@code {
+    private string postData;
+    private string responseMessage;
+
+    private async Task dataPost()
+    {
+        string apiUrl = "https://localhost:7252/api/books/postdata";
+
+        var data = new { Data = postData };
+
+        var response = await HttpClient.PostAsJsonAsync(apiUrl, data);
+
+        responseMessage = await response.Content.ReadAsStringAsync();
+    }
+
+}

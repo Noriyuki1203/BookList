@@ -1,0 +1,25 @@
+﻿@using SPABookList.Client.Models
+
+@if (book == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <Descriptions>
+        <DescriptionsItem Title="ID" Span="3">@book.BookId</DescriptionsItem>
+        <DescriptionsItem Title="Title" Span="3">@book.Title</DescriptionsItem>
+        <DescriptionsItem Title="Author" Span="3">@book.Author</DescriptionsItem>
+    </Descriptions>
+}
+
+@code {
+    [Parameter]
+    public Book? book { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        // パラメータが変更された場合に呼び出されるメソッド
+        return Task.CompletedTask;
+    }
+}

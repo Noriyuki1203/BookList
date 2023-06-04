@@ -1,0 +1,58 @@
+﻿@page "/booklist"
+@using SPABookList.Client.Models
+@using System.Text
+@using System.Text.Json
+@inject HttpClient Http
+
+@if (books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <Table TItem="Book" DataSource="@books">
+        <Column @bind-Field="@context.BookId" Title="ID">
+            <Button Type="link" OnClick="() => OpenDetailModal(context.BookId)">@context.BookId</Button>
+                    </Column>
+        <Column @bind-Field="@context.Title" />
+        <Column @bind-Field="@context.Author" />
+    </Table>
+
+    <Modal Title="Detail" Visible="@showDetailModal" OnCancel="@CloseModal" Footer="@null">
+        <BookDetail Book="@book"></BookDetail>
+    </Modal>
+}
+
+@code {
+    private List<Book>? books;
+    private Book? book;
+    private Book selectedBook;
+    private bool showDetailModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await Http.GetFromJsonAsync<List<Book>>("https://localhost:7252/api/books");
+    }
+
+    public async Task OpenDetailModal(int id)
+    {
+        var response = await Http.PostAsync($"https://localhost:7252/api/books/GetPostBook", new StringContent(id.ToString(), Encoding.UTF8, "application/json"));
+        if (response.IsSuccessStatusCode)
+            {
+            //    var jsonString = await response.Content.ReadAsStringAsync();
+            //    var book = JsonSerializer.Deserialize<Book>(jsonString);
+            //    selectedBook = book;
+                this.book = await response.Content.ReadFromJsonAsync<Book>();
+                showDetailModal = true;
+            }
+            else
+            {
+                // エラーハンドリング
+            }
+    }
+
+    public void CloseModal()
+    {
+        showDetailModal = false;
+    }
+}
